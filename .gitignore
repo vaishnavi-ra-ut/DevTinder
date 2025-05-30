@@ -3,3 +3,4 @@ node_modules
 dist/
 *.map
 *.mdb
+package-lock.json
