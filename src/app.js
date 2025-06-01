@@ -26,16 +26,24 @@ app.get("/user" , async (req , res) =>{
 })
 
 // update the data
-app.patch("/user" , async (req , res) =>{
+app.patch("/user/:userId" , async (req , res) =>{
+  const userId = req.params?.userId;
   const data = req.body;
-  const userId = req.body.userId;
-  try{
-   await User.findByIdAndUpdate({ _id : userId} , data);
-    res.send("User upadated successfully");
   
+  try{
+    const ALLOWED = ["about" , "gender" , "skills"]
+    const isAllowed = Object.keys(data).every(k => ALLOWED.includes(k));
+
+    if(!isAllowed){
+      throw new Error ("Update not allowed");
+    }
+
+   await User.findByIdAndUpdate({ _id : userId} , data);
+    res.send("User updated successfully");
+
   } 
   catch(err){
-    res.status(400).send("Somthing went wrong");
+    res.status(400).send("Update Failed : " + err.message);
   }
 })
 
