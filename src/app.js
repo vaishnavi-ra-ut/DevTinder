@@ -4,8 +4,12 @@ const app = express();
 const User = require("./models/User")
 const {validateSignUp} = require("./helpers/validators")
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken");
+const userAuth = require("./middlewares/auth")
 
 app.use(express.json()); 
+app.use(cookieParser());
 
 app.post("/signup", async (req , res) => {
   try{
@@ -26,7 +30,16 @@ app.post("/signup", async (req , res) => {
   }
 })
 
-app.post("/login" , async (req , res) => {
+app.get("/profile" , userAuth , async (req , res) => {
+  try{
+    const user = req.user;
+    res.send(user);
+  }catch(err){
+    res.status(400).send("ERROR : " + err.message);
+  }                                                                 
+});
+
+app.post ("/login" , async (req , res) => {
   try{
     const {emailId , password} = req.body;
     const user = await User.findOne({emailId : emailId});
@@ -34,8 +47,15 @@ app.post("/login" , async (req , res) => {
       throw new Error ("EmailId is not present in DB");
     }
 
-    const isPassValid = await bcrypt.compare( password , user.password);
+    const isPassValid = await user.validatePass(password);
     if(isPassValid){
+
+      // Create a jwt token - Off-loaded onto user schema
+      const token = await user.getJWT();
+
+      // Add token to cookie and send the respond back to the user 
+      res.cookie("token" , token);
+      
       res.send("Login Successfull !");
     } 
     else{
