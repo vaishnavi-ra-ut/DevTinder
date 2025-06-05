@@ -1,4 +1,5 @@
 const validator = require("validator")
+
 const validateSignUp = (req) => {
     const {firstName , lastName , emailId , password } = req.body;  
     
