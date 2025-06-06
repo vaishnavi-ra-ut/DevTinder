@@ -23,7 +23,7 @@ authRouter.post("/signup", async (req , res) => {
   }
 })
 
-authRouter.post ("/login" , async (req , res) => {
+authRouter.post("/login" , async (req , res) => {
   try{
     const {emailId , password} = req.body;
     const user = await User.findOne({emailId : emailId});
@@ -51,6 +51,12 @@ authRouter.post ("/login" , async (req , res) => {
   }
 });
 
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token" , null, {
+    expires: new Date(Date.now())
+  });  
+  res.send("Logout Successfull !");// 30 days});
+});
 
 
 

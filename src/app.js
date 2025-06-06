@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/" , authRouter);
-app.use("/" , profileRouter);
+app.use("" , profileRouter);
 app.use("/" , requestRouter);    
 
 // feeds/gets all the data from the database 
