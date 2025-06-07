@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         type : String , 
         required : true, 
         unique : true ,
-        validatr(value){
+        validate(value){
             if(!validator.isEmail(value)){
                 throw new Error ("Wrong syntax of Email" + value);
             }
@@ -43,8 +43,7 @@ const userSchema = new mongoose.Schema({
     skills : {
         type: [String] 
     }
-    });
-
+});
 
 userSchema.methods.getJWT = async function() {
     const user = this;
@@ -64,3 +63,6 @@ userSchema.methods.validatePass = async function(passwordInputByUser) {
 }
 
 module.exports = mongoose.model("User", userSchema);
+
+// This code defines a Mongoose schema for a User model, including methods for generating JWTs and validating passwords.
+// It uses bcrypt for password hashing and validation  
