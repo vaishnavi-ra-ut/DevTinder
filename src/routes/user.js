@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = express.Router(); 
 const userAuth = require("../middlewares/userAuth");
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/User");
 
 //Get all the pending connection requests for the loggedin user
 userRouter.get("/user/pendingRequests",userAuth , async (req, res) => {
@@ -54,6 +55,37 @@ userRouter.get("/user/connections" , userAuth , async (req, res) => {
     }catch(err){
         res.status(400).send("Something went wrong");
     }
+})
+
+userRouter.get("/user/feed" , userAuth , async (req , res) => {
+    try{
+        const loggedInUser = req.user;
+        
+        const connectionRequests = await ConnectionRequest.find({
+            $or : [
+                { fromOurUserId: loggedInUser._id },
+                { toOtherUserId: loggedInUser._id }
+            ],
+        }).select("fromOurUserId toOtherUserId ")
+
+        const hideUsers = new Set();
+        connectionRequests.forEach((requests) => {
+            hideUsers.add(requests.fromOurUserId.toString());
+            hideUsers.add(requests.toOtherUserId.toString());
+        })
+        const users = await User.find({
+           $and: [
+                { _id: { $ne: loggedInUser._id } },
+                { _id: { $nin: Array.from(hideUsers) } }
+            ]
+        })
+        res.status(200).json({
+            message: "Feed fetched successfully",
+            data: users
+        })
+    }catch(err){
+        res.status(400).send("Something went wrong");
+    } 
 })
 
 module.exports = userRouter;
