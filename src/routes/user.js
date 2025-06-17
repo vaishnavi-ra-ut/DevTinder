@@ -60,13 +60,17 @@ userRouter.get("/user/connections" , userAuth , async (req, res) => {
 userRouter.get("/user/feed" , userAuth , async (req , res) => {
     try{
         const loggedInUser = req.user;
-        
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit > 30 ? 30 : limit;
+        const skip = (page - 1) * limit;
+
         const connectionRequests = await ConnectionRequest.find({
             $or : [
                 { fromOurUserId: loggedInUser._id },
                 { toOtherUserId: loggedInUser._id }
             ],
-        }).select("fromOurUserId toOtherUserId ")
+        }).select("fromOurUserId toOtherUserId ").skip(skip).limit(limit);
 
         const hideUsers = new Set();
         connectionRequests.forEach((requests) => {

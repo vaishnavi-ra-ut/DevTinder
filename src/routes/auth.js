@@ -25,6 +25,8 @@ authRouter.post("/signup", async (req , res) => {
 
 authRouter.post("/login" , async (req , res) => {
   try{
+    console.log("Login route hit");
+    console.log("Request body:", req.body);
     const {emailId , password} = req.body;
     const user = await User.findOne({emailId : emailId});
     if(!user){
@@ -40,7 +42,7 @@ authRouter.post("/login" , async (req , res) => {
       // Add token to cookie and send the respond back to the user 
       res.cookie("token" , token);
       
-      res.send("Login Successfull !");
+      res.send(user);
     } 
     else{
       throw new Error("Wrong Password");

@@ -4,12 +4,17 @@ const app = express();
 const User = require("./models/User")
 const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/requests");
 const userRouter = require("./routes/user");
 
+app.use(cors({
+  origin: "http://localhost:5173", // Update with your frontend URL
+  credentials: true, // Allow cookies to be sent
+}));
 app.use(express.json()); 
 app.use(cookieParser());
 
