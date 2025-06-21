@@ -1,71 +1,68 @@
 const express = require("express");
 const connectDB = require("./config/Database");
-const app = express();
-const User = require("./models/User")
-const cookieParser = require("cookie-parser")
-const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
+const User = require("./models/User");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/requests");
 const userRouter = require("./routes/user");
 
-app.use(cors({
-  origin: "http://localhost:5173", // Update with your frontend URL
-  credentials: true, // Allow cookies to be sent
-}));
-app.use(express.json()); 
+const app = express();
+
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+  methods: "GET,POST,PATCH,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
+};
+
+app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  console.log("📩", req.method, req.url);
+  next();
+});
+
+app.use(express.json());
 app.use(cookieParser());
 
-app.use("/" , authRouter);
-app.use("/" , profileRouter);
-app.use("/" , requestRouter);   
-app.use("/" , userRouter); 
+// ✅ All route handlers
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
+app.use("/", userRouter);
 
-// feeds/gets all the data from the database 
-app.get("/user" , async (req , res) =>{
-  const userEmail = req.body.emailId ;
-  try{
-   const user =  await User.find({ emailId : userEmail});
-    res.send(user);
-  
-  } 
-  catch(err){
-    res.status(400).send("Somthing went wrong");
-  }
-})
-
-// update the data
-app.patch("/user/:userId" , async (req , res) =>{
+// ✅ Manual PATCH route (if still needed)
+app.patch("/user/:userId", async (req, res) => {
   const userId = req.params?.userId;
   const data = req.body;
 
-  try{
-    const ALLOWED = ["about" , "gender" , "skills"]
-    const isAllowed = Object.keys(data).every(k => ALLOWED.includes(k));
+  try {
+    const ALLOWED = ["about", "gender", "skills", "photoURL"];
+    const isAllowed = Object.keys(data).every((k) => ALLOWED.includes(k));
 
-    if(!isAllowed){
-      throw new Error ("Update not allowed");
+    if (!isAllowed) {
+      throw new Error("Update not allowed");
     }
 
-   await User.findByIdAndUpdate({ _id : userId} , data);
+    await User.findByIdAndUpdate({ _id: userId }, data);
     res.send("User updated successfully");
-
-  } 
-  catch(err){
+  } catch (err) {
     res.status(400).send("Update Failed : " + err.message);
   }
-})
+});
 
+// ✅ Connect to DB and start server
 connectDB()
   .then(() => {
-    console.log("Database connection established...");
-
+    console.log("✅ Database connection established...");
     app.listen(3000, () => {
-      console.log("Server is successfully listening on port 3000...");
+      console.log("🚀 Server is listening on port 3000...");
     });
   })
   .catch((err) => {
-    console.error("Database cannot be connected!!", err);
+    console.error("❌ Database connection failed!!", err);
   });

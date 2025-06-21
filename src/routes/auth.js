@@ -8,11 +8,11 @@ authRouter.post("/signup", async (req , res) => {
   try{
     validateSignUp(req);
 
-    const {firstName , lastName , emailId , password} = req.body;
+    const {firstName , lastName , emailId , password , age , gender , skills , photoURL} = req.body;
     const passwordHash = await bcrypt.hash(password , 10)
 
     const user = new User({
-      firstName , lastName , emailId , password : passwordHash ,
+      firstName , lastName , emailId , password : passwordHash , age , gender , skills , photoURL , about
     });
     await user.save();
     res.send("User added Succesfully!");
@@ -25,8 +25,6 @@ authRouter.post("/signup", async (req , res) => {
 
 authRouter.post("/login" , async (req , res) => {
   try{
-    console.log("Login route hit");
-    console.log("Request body:", req.body);
     const {emailId , password} = req.body;
     const user = await User.findOne({emailId : emailId});
     if(!user){

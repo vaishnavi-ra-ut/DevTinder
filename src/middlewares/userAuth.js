@@ -2,11 +2,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const userAuth = async (req , res , next) =>{
+    if (req.method === "OPTIONS") {
+    return next();
+  }
     // Read the token fron the request cookies 
     try{ 
         const {token} = req.cookies;
         if(!token){
-            throw new Error ("Token is not valid !");
+            return res.status(401).send("Please login first");
         }
 
         // Validate the the token 

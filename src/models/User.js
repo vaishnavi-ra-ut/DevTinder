@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     gender : {
         type : String , 
         validate(value){
-            if(!["male" , "female" , "others"].includes(value)){
+            if(!["Male" , "Female" , "Others"].includes(value)){
                 throw new Error ("Gender data not valid");
             }
         }
@@ -43,7 +43,11 @@ const userSchema = new mongoose.Schema({
     },
     skills : {
         type: [String] 
-    }
+    },
+    photoURL : {
+        type : String,
+        default : "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-transparent-600nw-2463868853.jpg"
+    },
 });
 
 userSchema.methods.getJWT = async function() {

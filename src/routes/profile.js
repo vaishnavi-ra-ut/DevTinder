@@ -3,33 +3,41 @@ const profileRouter = express.Router();
 const userAuth = require("../middlewares/userAuth");
 const { validateEditProfile } = require("../helpers/validation");
 
-
-profileRouter.get("/profile/view" , userAuth , async (req , res) => {
-  try{
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
+  try {
     const user = req.user;
     res.send(user);
-  }catch(err){
+  } catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }                                                                 
 });
 
-profileRouter.patch("/profile/edit" , userAuth , async (req , res) => {
-  try{
-    if (validateEditProfile(req)){
-      throw new Error("Invalid fields for update");
-    }
-    const loggdInUser = req.user;
-    
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
+  try {
+    // 🔍 Add these logs to debug req.body
+    console.log("typeof req.body:", typeof req.body);
+    console.log("req.body raw:", req.body);
+    console.log("Object.keys(req.body):", Object.keys(req.body));
+
+    // This runs your validation logic
+    validateEditProfile(req);
+
+    const loggedInUser = req.user;
+
     Object.keys(req.body).forEach((key) => {
-      loggdInUser[key] = req.body[key];
+      loggedInUser[key] = req.body[key];
     });
 
-    await loggdInUser.save();
+    await loggedInUser.save();
+    console.log("✅ User updated:", loggedInUser);
+    res.send("Profile updated successfully");
 
-  }catch(err){
-      return res.status(400).send("ERROR : " + err.message);
+  } catch (err) {
+    console.error("❌ Update error:", err.message);
+    return res.status(400).send("ERROR : " + err.message);
   }
-
 });
+
+
 
 module.exports = profileRouter;
