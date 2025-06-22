@@ -11,7 +11,7 @@ userRouter.get("/user/pendingRequests",userAuth , async (req, res) => {
         const connectionRequests = await ConnectionRequest.find({
             toOtherUserId : loggedInUser._id,
             status: "interested"
-        }).populate("fromOurUserId",["firstName", "lastName" , "gender" , "about" , "skills"]);
+        }).populate("fromOurUserId",["firstName", "lastName" , "gender" , "about" , "skills" , "age" , "photoURL"]);
 
         res.status(200).json({
             message: "Pending connection requests fetched successfully",
@@ -31,8 +31,9 @@ userRouter.get("/user/connections" , userAuth , async (req, res) => {
                 { toOtherUserId: loggedInUser._id , status : "accepted" }
             ],
         })
-        .populate("fromOurUserId", "firstName lastName email") 
-        .populate("toOtherUserId", "firstName lastName email");
+        .populate("fromOurUserId", "firstName lastName email photoURL age gender about skills")
+        .populate("toOtherUserId", "firstName lastName email photoURL age gender about skills")
+
 
         const data = connectionRequests.map((row) => {
             if(row.fromOurUserId._id.toString() === loggedInUser._id.toString()){

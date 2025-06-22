@@ -16,8 +16,6 @@ const validateEditProfile = (req) => {
   const allowedEdit = ["firstName", "lastName", "about", "skills", "age", "gender", "photoURL"];
   const updateFields = Object.keys(req.body);
 
-  console.log("Incoming fields:", updateFields);     // 👈 log fields being updated
-  console.log("Allowed fields:", allowedEdit);       // 👈 log allowed fields
 
   const isEditAllowed = updateFields.every((field) => allowedEdit.includes(field));
 
