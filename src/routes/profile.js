@@ -3,6 +3,7 @@ const profileRouter = express.Router();
 const userAuth = require("../middlewares/userAuth");
 const { validateEditProfile } = require("../helpers/validation");
 
+
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
@@ -29,11 +30,9 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     });
 
     await loggedInUser.save();
-    console.log("✅ User updated:", loggedInUser);
     res.send("Profile updated successfully");
 
   } catch (err) {
-    console.error("❌ Update error:", err.message);
     return res.status(400).send("ERROR : " + err.message);
   }
 });

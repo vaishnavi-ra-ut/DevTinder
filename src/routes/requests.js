@@ -44,7 +44,6 @@ requestRouter.post("/request/send/:status/:toOtherUserId", userAuth, async (req,
         });
 
     } catch (err) {
-        console.error("Error in sending connection request:", err);
         res.status(400).send("Something went wrong while sending the request");
     }
 });

@@ -12,17 +12,12 @@ const userRouter = require("./routes/user");
 
 const app = express();
 
-const corsOptions = {
-  origin: "http://localhost:5173",
+app.use(cors({
+  origin: 'http://localhost:5173',
   credentials: true,
-  methods: "GET,POST,PATCH,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
-};
-
-app.use(cors(corsOptions));
+}));
 
 app.use((req, res, next) => {
-  console.log("📩", req.method, req.url);
   next();
 });
 
@@ -58,11 +53,11 @@ app.patch("/user/:userId", async (req, res) => {
 // ✅ Connect to DB and start server
 connectDB()
   .then(() => {
-    console.log("✅ Database connection established...");
+    console.log("Database connection established...");
     app.listen(3000, () => {
-      console.log("🚀 Server is listening on port 3000...");
+      console.log("Server is listening on port 3000...");
     });
   })
   .catch((err) => {
-    console.error("❌ Database connection failed!!", err);
+    console.error("Database connection failed!!", err);
   });
