@@ -54,7 +54,7 @@ app.patch("/user/:userId", async (req, res) => {
 connectDB()
   .then(() => {
     console.log("Database connection established...");
-    app.listen(3000, () => {
+    app.listen(3000, '0.0.0.0', () => {
       console.log("Server is listening on port 3000...");
     });
   })
